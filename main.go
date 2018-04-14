@@ -3,9 +3,10 @@ package main
 import (
 	"github.com/armon/go-socks5"
 )
+import "os"
 
 func main() {
-	creds := socks5.StaticCredentials{"user": "password"}
+	creds := socks5.StaticCredentials{os.Getenv("SOCKS_USER"): os.Getenv("SOCKS_PASSWORD")}
 	cator := socks5.UserPassAuthenticator{Credentials: creds}
 	conf := &socks5.Config{
 		AuthMethods: []socks5.Authenticator{cator},
