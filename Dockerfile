@@ -8,4 +8,6 @@ RUN cd /src && go build -ldflags "-linkmode external -extldflags -static" -o pro
 FROM scratch
 WORKDIR /app
 COPY --from=build-env /src/proxy /app/
+ENV SOCKS_USER=user
+ENV SOCKS_PASSWORD=password
 CMD ["./proxy"]
