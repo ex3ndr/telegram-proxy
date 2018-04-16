@@ -6,7 +6,15 @@ import (
 import "os"
 
 func main() {
-	creds := socks5.StaticCredentials{os.Getenv("SOCKS_USER"): os.Getenv("SOCKS_PASSWORD")}
+	user := "user"
+	password := "password"
+	if os.Getenv("SOCKS_USER") != "" {
+		user = os.Getenv("SOCKS_USER")
+	}
+	if os.Getenv("SOCKS_PASSWORD") != "" {
+		password = os.Getenv("SOCKS_PASSWORD")
+	}
+	creds := socks5.StaticCredentials{user: password}
 	cator := socks5.UserPassAuthenticator{Credentials: creds}
 	conf := &socks5.Config{
 		AuthMethods: []socks5.Authenticator{cator},
