@@ -2,8 +2,26 @@ package main
 
 import (
 	"github.com/armon/go-socks5"
+	"golang.org/x/net/context"
 )
-import "os"
+import (
+	"os"
+	"strings"
+)
+
+type PermitCommand struct {
+	ipAddresses []string
+};
+
+func (p *PermitCommand) Allow(ctx context.Context, req *socks5.Request) (context.Context, bool) {
+	for _, b := range p.ipAddresses {
+		if b == req.DestAddr.IP.String() {
+			return ctx, true
+		}
+	}
+
+	return ctx, false
+};
 
 func main() {
 	conf := &socks5.Config{}
@@ -20,6 +38,13 @@ func main() {
 		creds := socks5.StaticCredentials{user: password}
 		cator := socks5.UserPassAuthenticator{Credentials: creds}
 		conf.AuthMethods = []socks5.Authenticator{cator}
+	}
+
+	if os.Getenv("IP_ADDRESSES") != "" {
+		ipAddresses := strings.Split(os.Getenv("IP_ADDRESSES"), ",")
+		conf.Rules = &PermitCommand{
+			ipAddresses: ipAddresses,
+		}
 	}
 
 	server, err := socks5.New(conf)
