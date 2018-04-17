@@ -10,7 +10,7 @@ docker run --restart always -d --name telegram-proxy -p 1080:1080 ex3ndr/telegra
 
 or with custom credentials
 `
-docker run --restart always -d --name telegram-proxy -v SOCKS_USER=telegram -v SOCKS_PASSWORD=telegram -p 1080:1080 ex3ndr/telegram-proxy
+docker run --restart always -d --name telegram-proxy -e SOCKS_USER=telegram -e SOCKS_PASSWORD=telegram -p 1080:1080 ex3ndr/telegram-proxy
 `
 
 ## Step 2: Test Proxy
