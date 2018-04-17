@@ -6,19 +6,22 @@ import (
 import "os"
 
 func main() {
-	user := "user"
-	password := "password"
-	if os.Getenv("SOCKS_USER") != "" {
-		user = os.Getenv("SOCKS_USER")
+	conf := &socks5.Config{}
+
+	if os.Getenv("SOCKS_AUTH") != "no" {
+		user := "user"
+		password := "password"
+		if os.Getenv("SOCKS_USER") != "" {
+			user = os.Getenv("SOCKS_USER")
+		}
+		if os.Getenv("SOCKS_PASSWORD") != "" {
+			password = os.Getenv("SOCKS_PASSWORD")
+		}
+		creds := socks5.StaticCredentials{user: password}
+		cator := socks5.UserPassAuthenticator{Credentials: creds}
+		conf.AuthMethods = []socks5.Authenticator{cator}
 	}
-	if os.Getenv("SOCKS_PASSWORD") != "" {
-		password = os.Getenv("SOCKS_PASSWORD")
-	}
-	creds := socks5.StaticCredentials{user: password}
-	cator := socks5.UserPassAuthenticator{Credentials: creds}
-	conf := &socks5.Config{
-		AuthMethods: []socks5.Authenticator{cator},
-	}
+
 	server, err := socks5.New(conf)
 	if err != nil {
 		panic(err)
