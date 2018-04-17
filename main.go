@@ -52,14 +52,16 @@ func main() {
 		ipAddresses := strings.Split(os.Getenv("IP_ADDRESSES"), ",")
 		rules := &IpRules{}
 		for _, s := range ipAddresses {
-			ipAddr, ipNet, err := net.ParseCIDR(s);
+			ipAddr, ipNet, err := net.ParseCIDR(s)
 			if err != nil {
-				panic(err)
-			}
-			if ipNet.Mask == nil {
+				ipAddr = net.ParseIP(s)
+				if ipAddr == nil {
+					panic("Wrong IP or Network address")
+				}
 				rules.ipAddresses = append(rules.ipAddresses, ipAddr)
 				continue
 			}
+
 			rules.ipNetworks = append(rules.ipNetworks, ipNet)
 		}
 		conf.Rules = rules
