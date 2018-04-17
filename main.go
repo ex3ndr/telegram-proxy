@@ -7,15 +7,23 @@ import (
 import (
 	"os"
 	"strings"
+	"net"
 )
 
-type PermitCommand struct {
-	ipAddresses []string
+type IpRules struct {
+	ipAddresses []net.IP
+	ipNetworks []*net.IPNet
 };
 
-func (p *PermitCommand) Allow(ctx context.Context, req *socks5.Request) (context.Context, bool) {
-	for _, b := range p.ipAddresses {
-		if b == req.DestAddr.IP.String() {
+func (p *IpRules) Allow(ctx context.Context, req *socks5.Request) (context.Context, bool) {
+	for _, ip := range p.ipAddresses {
+		if ip.Equal(req.DestAddr.IP) {
+			return ctx, true
+		}
+	}
+
+	for _, ipNet := range p.ipNetworks {
+		if ipNet.Contains(req.DestAddr.IP) {
 			return ctx, true
 		}
 	}
@@ -42,9 +50,25 @@ func main() {
 
 	if os.Getenv("IP_ADDRESSES") != "" {
 		ipAddresses := strings.Split(os.Getenv("IP_ADDRESSES"), ",")
-		conf.Rules = &PermitCommand{
-			ipAddresses: ipAddresses,
+
+		rules := &IpRules{}
+
+		for _, s := range ipAddresses {
+			ipAddr, ipNet, err := net.ParseCIDR(s);
+			if err != nil {
+				panic(err)
+			}
+
+			if ipNet.Mask == nil {
+				rules.ipAddresses = append(rules.ipAddresses, ipAddr)
+				continue
+			}
+
+			rules.ipNetworks = append(rules.ipNetworks, ipNet)
+
 		}
+
+		conf.Rules = rules
 	}
 
 	server, err := socks5.New(conf)
