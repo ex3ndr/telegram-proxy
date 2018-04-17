@@ -12,7 +12,7 @@ import (
 
 type IpRules struct {
 	ipAddresses []net.IP
-	ipNetworks []*net.IPNet
+	ipNetworks  []*net.IPNet
 };
 
 func (p *IpRules) Allow(ctx context.Context, req *socks5.Request) (context.Context, bool) {
@@ -50,24 +50,18 @@ func main() {
 
 	if os.Getenv("IP_ADDRESSES") != "" {
 		ipAddresses := strings.Split(os.Getenv("IP_ADDRESSES"), ",")
-
 		rules := &IpRules{}
-
 		for _, s := range ipAddresses {
 			ipAddr, ipNet, err := net.ParseCIDR(s);
 			if err != nil {
 				panic(err)
 			}
-
 			if ipNet.Mask == nil {
 				rules.ipAddresses = append(rules.ipAddresses, ipAddr)
 				continue
 			}
-
 			rules.ipNetworks = append(rules.ipNetworks, ipNet)
-
 		}
-
 		conf.Rules = rules
 	}
 
