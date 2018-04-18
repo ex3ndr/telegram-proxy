@@ -48,8 +48,8 @@ func main() {
 		conf.AuthMethods = []socks5.Authenticator{cator}
 	}
 
-	if os.Getenv("IP_ADDRESSES") != "" {
-		ipAddresses := strings.Split(os.Getenv("IP_ADDRESSES"), ",")
+	if os.Getenv("SOCKS_WHITELIST") != "" {
+		ipAddresses := strings.Split(os.Getenv("SOCKS_WHITELIST"), ",")
 		rules := &IpRules{}
 		for _, s := range ipAddresses {
 			ipAddr, ipNet, err := net.ParseCIDR(s)
