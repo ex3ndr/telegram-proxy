@@ -10,12 +10,12 @@ docker run --restart always -d --name telegram-proxy -p 1080:1080 ex3ndr/telegra
 
 or with custom credentials
 ```
-docker run --restart always -d --name telegram-proxy -v SOCKS_USER=telegram -v SOCKS_PASSWORD=telegram -p 1080:1080 ex3ndr/telegram-proxy
+docker run --restart always -d --name telegram-proxy -e SOCKS_USER=telegram -e SOCKS_PASSWORD=telegram -p 1080:1080 ex3ndr/telegram-proxy
 ```
 
 or if you want to allow only specific ip addresses as destination for proxy
 ```
-docker run --restart always -d --name telegram-proxy -e "IP_ADDRESSES=8.8.8.8,8.8.4.4,8.8.8.0/22" -p 1080:1080 ex3ndr/telegram-proxy
+docker run --restart always -d --name telegram-proxy -e "SOCKS_WHITELIST=8.8.8.8,8.8.4.4,8.8.8.0/22" -p 1080:1080 ex3ndr/telegram-proxy
 ```
 
 ## Step 2: Test Proxy
